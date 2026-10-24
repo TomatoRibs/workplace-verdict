@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>同事判刑书 · 职场审判庭</title>
+<style>
+  /* ===== Design tokens（Brutalism × 审判公文 · 深咖啡主色） ===== */
+  :root{
+    --espresso:#3a2a1c;    /* 深咖啡：主深色（纸底 11.7:1） */
+    --espresso2:#4a382a;   /* 咖啡浅档 */
+    --espresso3:#59452e;   /* 咖啡分隔线 */
+    --paper:#f2ecdd;       /* 判决纸 */
+    --paper2:#e8dfc9;      /* 纸背光面 */
+    --card:#faf6ea;        /* 卡片纸 */
+    --red:#c8281b;         /* 审判红（纸底 4.7:1） */
+    --red-deep:#9c1c10;    /* 深红（纸底 7:1） */
+    --gold:#7d5f1a;        /* 加深金：小字标签（纸底 5.4:1） */
+    --gold-bright:#d9a93b; /* 亮金：装饰/深底上的字 */
+    --jade:#3f6b3a;        /* 苔绿：减刑主题色（纸底 5.1:1，白字 6.0:1） */
+    --indigo:#2b4c7e;      /* 靛蓝：案发现场/登记主题色（纸底 7.3:1，白字 8.6:1） */
+    --muted:#4d463c;       /* 次级文字（纸底 7.9:1） */
+    --hard:6px 6px 0 var(--espresso);        /* 招牌硬阴影 */
+    --hard-sm:4px 4px 0 var(--espresso);
+    --dur:120ms;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--paper2);
+    color:var(--espresso);
+    font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB","Source Han Sans SC",sans-serif;
+    line-height:1.6;
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+  button{font-family:inherit;cursor:pointer;}
+  svg{display:block;}
+
+  /* 焦点环：纸上用红，深底上用金 */
+  :focus-visible{outline:3px solid var(--red);outline-offset:3px;}
+  .rail :focus-visible,.app-head :focus-visible,.modal-box :focus-visible{outline-color:var(--gold-bright);}
+
+  /* 顶部硬色条 */
+  .topbar{height:10px;flex-shrink:0;background:var(--espresso);border-bottom:4px solid var(--red);}
+
+  /* 背景装饰：网格 + 大水印 */
+  .bg-deco{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  .bg-deco::before{content:"";position:absolute;inset:0;
+    background-image:linear-gradient(rgba(58,42,28,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(58,42,28,.06) 1px,transparent 1px);
+    background-size:44px 44px;}
+  .bg-deco .wm{position:absolute;font-weight:900;color:rgba(58,42,28,.07);line-height:.78;user-select:none;}
+  .bg-deco .wm1{left:-26px;top:-44px;font-size:300px;}
+  .bg-deco .wm2{right:-20px;bottom:-60px;font-size:280px;color:rgba(200,40,27,.08);}
+
+  /* 外壳 */
+  .app-shell{flex:1;min-height:0;display:flex;padding:14px;position:relative;z-index:1;}
+  .app{
+    flex:1;width:100%;max-width:1280px;margin:0 auto;min-height:0;
+    display:flex;flex-direction:column;
+    background:var(--paper);border:3px solid var(--espresso);
+    box-shadow:10px 10px 0 var(--espresso);overflow:hidden;position:relative;
+  }
+
+  /* 抬头：深咖啡底 */
+  .app-head{
+    flex-shrink:0;position:relative;
+    background:var(--espresso);color:var(--paper);
+    padding:14px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+    border-bottom:4px solid var(--red);
+  }
+  .hbrand{display:flex;align-items:center;gap:14px;position:relative;z-index:1;}
+  .seal{
+    width:56px;height:56px;flex-shrink:0;border:3px solid var(--gold-bright);border-radius:50%;
+    display:flex;align-items:center;justify-content:center;color:var(--gold-bright);
+    font-weight:900;font-size:19px;letter-spacing:2px;transform:rotate(-8deg);
+  }
+  .hbrand .org{font-size:12px;letter-spacing:5px;color:var(--gold-bright);font-weight:800;}
+  .hbrand h1{font-size:28px;line-height:1.1;margin:2px 0 0;font-weight:900;letter-spacing:2px;color:var(--paper);}
+  .app-head .tagline{flex:1;min-width:220px;font-size:13.5px;color:#cbbfa4;margin:0;position:relative;z-index:1;}
+  .app-head .tagline b{color:var(--gold-bright);}
+  .stepbadge{background:var(--red);color:#fff;padding:9px 16px;font-weight:900;font-size:13px;white-space:nowrap;position:relative;z-index:1;letter-spacing:1px;}
+
+  /* 主体网格 */
+  .app-body{flex:1;min-height:0;display:grid;grid-template-columns:216px 1fr;}
+
+  /* 左栏：深咖啡轨 */
+  .rail{
+    background:var(--espresso);color:var(--paper);
+    border-right:4px solid var(--espresso3);padding:20px 14px;display:flex;flex-direction:column;gap:4px;overflow:auto;
+  }
+  .rail-cap{font-size:12px;font-weight:900;letter-spacing:3px;color:var(--gold-bright);padding:0 8px 12px;border-bottom:2px solid var(--espresso3);margin-bottom:10px;}
+  .steps{position:relative;display:flex;flex-direction:column;gap:6px;}
+  .steps::before{content:"";position:absolute;left:23px;top:26px;bottom:26px;width:3px;background:var(--espresso3);z-index:0;}
+  .step{
+    position:relative;z-index:1;display:flex;align-items:center;gap:11px;
+    padding:10px 8px;font-size:13.5px;color:#c4b393;font-weight:700;
+    background:transparent;border:none;text-align:left;width:100%;transition:background var(--dur),color var(--dur);
+  }
+  .step .dot{
+    width:44px;height:44px;flex-shrink:0;border:3px solid var(--espresso3);background:var(--espresso2);color:#c4b393;
+    display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;transition:all var(--dur);
+    font-variant-numeric:tabular-nums;
+  }
+  .step .st{display:flex;align-items:center;gap:8px;line-height:1.25;}
+  .step .ico{width:20px;height:20px;flex-shrink:0;opacity:.8;}
+  .step.active{color:var(--paper);}
+  .step.active .dot{background:var(--red);border-color:var(--red);color:#fff;}
+  .step.done{color:#e6dcc4;}
+  .step.done .dot{background:var(--gold-bright);border-color:var(--gold-bright);color:var(--espresso);}
+  .step.done .dot .n{display:none;}
+  .step.done .dot::after{content:"";width:20px;height:20px;background:var(--espresso);
+    clip-path:polygon(44% 62%,18% 40%,10% 50%,44% 78%,88% 16%,78% 8%);}
+  .rail-note{margin-top:auto;font-size:11.5px;color:#a99b80;border-top:2px dashed var(--espresso3);padding-top:14px;line-height:1.6;}
+  .rail-note b{color:var(--gold-bright);}
+
+  /* 右栏舞台 */
+  .stage{padding:20px 26px;display:flex;flex-direction:column;min-height:0;overflow:auto;background:var(--paper);}
+  .panel{display:none;flex:1;flex-direction:column;min-height:0;}
+  .panel.active{display:flex;animation:slidein .22s ease;}
+  @keyframes slidein{from{opacity:0;transform:translateX(14px);}to{opacity:1;transform:none;}}
+
+  /* 每步标题横幅：默认靛蓝（案发现场），各步主题色见下方主题段 */
+  .phead{
+    background:var(--indigo);color:#fff;padding:12px 18px;
+    display:flex;align-items:center;gap:14px;margin-bottom:12px;flex-shrink:0;
+    border:3px solid var(--espresso);box-shadow:var(--hard-sm);
+  }
+  .phead .kicker{font-size:12px;font-weight:900;background:var(--espresso);color:var(--gold-bright);padding:4px 10px;letter-spacing:3px;flex-shrink:0;}
+  .phead h2{font-size:21px;margin:0;font-weight:900;color:#fff;letter-spacing:1px;}
+  .phead .pico{margin-left:auto;display:flex;align-items:center;}
+  .phead .pico svg{width:30px;height:30px;color:#fff;}
+
+  /* 提示条：左侧红章，不再是一行孤文字 */
+  .phint{
+    color:var(--muted);font-size:13.5px;margin:0 0 14px;font-weight:600;flex-shrink:0;
+    background:var(--paper2);border-left:8px solid var(--red);padding:10px 14px;line-height:1.55;
+  }
+  .phint .hl{color:var(--red);font-weight:900;background:#f7dcd4;padding:0 6px;}
+
+  /* ===== 网格：不再拉伸甩空，内容自然高度 ===== */
+  .grid-crimes{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;flex-shrink:0;}
+  .grid-mit{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;flex-shrink:0;}
+  .atmo{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,1fr);gap:12px;flex-shrink:0;}
+  @media(min-width:1024px){ .grid-crimes{grid-template-columns:repeat(5,1fr);} }
+  @media(min-width:880px){ .grid-mit,.atmo{grid-template-columns:repeat(3,1fr);} }
+
+  /* ===== 选项：锐角厚边框 + 硬阴影 ===== */
+  .opt{
+    position:relative;border:3px solid var(--espresso);background:var(--card);
+    padding:14px 14px 14px 48px;font-size:15px;color:var(--espresso);font-weight:700;
+    user-select:none;display:flex;align-items:center;text-align:left;width:100%;
+    transition:transform var(--dur),box-shadow var(--dur),background var(--dur),color var(--dur);
+    line-height:1.45;box-shadow:var(--hard-sm);
+  }
+  .opt:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--espresso);background:#fff;}
+  .opt:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--espresso);}
+  .opt .num{
+    position:absolute;left:12px;top:50%;transform:translateY(-50%);
+    min-width:26px;height:26px;padding:0 4px;background:var(--espresso);color:var(--paper);
+    font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    font-variant-numeric:tabular-nums;
+  }
+  .opt.on{background:var(--espresso);color:var(--paper);}
+  .opt.on:hover{background:var(--espresso2);}
+  .opt.on .num{background:var(--red);color:#fff;}
+
+  /* 罪证格：方块、居中文案 */
+  .grid-crimes .opt{flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px 12px;min-height:120px;}
+  .grid-crimes .opt .num{position:static;transform:none;margin-bottom:10px;min-width:30px;height:30px;font-size:14px;}
+
+  /* 气氛：左金条 + 方框复选框 */
+  .atmo li{list-style:none;}
+  .atmo .opt{padding:14px 16px 14px 46px;min-height:78px;border-left:8px solid var(--gold);}
+  .atmo .opt::before{
+    content:"";position:absolute;left:15px;top:50%;transform:translateY(-50%);
+    width:20px;height:20px;border:3px solid var(--gold);background:var(--card);
+  }
+  .atmo .opt.on{border-left-color:var(--red);}
+  .atmo .opt.on::before{border-color:var(--red);
+    background:linear-gradient(45deg,var(--red) 45%,transparent 45%) no-repeat,linear-gradient(-45deg,var(--red) 45%,transparent 45%) no-repeat;
+    background-size:13px 13px;background-position:0 0,7px 7px;}
+  .atmo .opt b{color:var(--red);}
+  .atmo .opt.on b{color:var(--gold-bright);}
+
+  /* 减刑格：编号用金 */
+  .grid-mit .opt .num{background:var(--gold);}
+  .grid-mit .opt.on .num{background:var(--gold-bright);color:var(--espresso);}
+
+  /* ===== 立案清单（吸收余量 · 填充空白） ===== */
+  .docket{
+    flex:1;min-height:118px;margin-top:14px;
+    border:3px solid var(--espresso);background:var(--card);
+    display:flex;flex-direction:column;justify-content:center;
+    padding:12px 16px;box-shadow:var(--hard-sm);
+  }
+  .docket-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .docket-head .dh-t{font-size:13px;font-weight:900;letter-spacing:2px;color:var(--espresso);}
+  .docket-head .dh-c{margin-left:auto;font-size:12px;font-weight:900;color:var(--red);background:#f7dcd4;padding:2px 10px;letter-spacing:1px;
+    font-family:"JetBrains Mono","SFMono-Regular",Consolas,monospace;}
+  .docket-body{display:flex;flex-wrap:wrap;gap:8px;align-content:center;}
+  .docket-empty{font-size:13px;color:var(--muted);font-weight:600;line-height:1.6;}
+  .docket-empty b{color:var(--red);font-weight:900;}
+  .chip{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--espresso);color:var(--paper);
+    font-size:13px;font-weight:800;padding:7px 8px 7px 12px;border:3px solid var(--espresso);
+    box-shadow:3px 3px 0 rgba(58,42,28,.22);transition:transform var(--dur),box-shadow var(--dur);
+  }
+  .chip:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 rgba(58,42,28,.28);}
+  .chip .x{
+    width:22px;height:22px;flex-shrink:0;border:none;background:var(--red);color:#fff;
+    font-weight:900;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;
+    transition:background var(--dur);padding:0;
+  }
+  .chip .x:hover{background:#e8493a;}
+
+  /* 说明卡（引导 / 免责） */
+  .note-card{
+    margin-top:12px;flex-shrink:0;
+    background:var(--paper2);border-left:8px solid var(--gold);
+    padding:11px 14px;font-size:12.5px;color:var(--muted);font-weight:600;line-height:1.65;
+  }
+  .note-card b{color:var(--espresso);font-weight:900;letter-spacing:1px;}
+  .note-card .nl{color:var(--red);font-weight:900;}
+
+  /* ===== 导航：左右分贴，得体大气 ===== */
+  .nav{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:16px;padding-top:16px;flex-shrink:0;border-top:3px solid var(--espresso);}
+  .nav-left,.nav-right{display:flex;flex-wrap:wrap;gap:12px;align-items:center;}
+  .nav button{
+    font-size:15px;font-weight:900;padding:14px 24px;min-height:50px;
+    border:3px solid var(--espresso);background:var(--paper);color:var(--espresso);
+    transition:transform var(--dur),box-shadow var(--dur),background var(--dur),color var(--dur);
+    box-shadow:var(--hard-sm);letter-spacing:1px;display:inline-flex;align-items:center;gap:9px;
+  }
+  .nav button svg{width:17px;height:17px;flex-shrink:0;}
+  .nav button:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--espresso);}
+  .nav button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--espresso);}
+  .nav button:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:var(--hard-sm);}
+  .btn-next{background:var(--red);color:#fff;}
+  .btn-next:hover{background:var(--red-deep);}
+  .btn-next:disabled{background:var(--paper);color:var(--espresso);}
+
+  /* ===== 封面 ===== */
+  .panel.cover{justify-content:center;gap:4px;}
+  .cover-kicker{font-size:13px;font-weight:900;letter-spacing:5px;color:var(--red);margin-bottom:8px;}
+  .cover-title{font-size:clamp(30px,4.2vw,46px);line-height:1.15;font-weight:900;margin:0 0 14px;letter-spacing:1px;text-wrap:balance;}
+  .cover-title mark{background:var(--red);color:var(--paper);padding:0 10px;}
+  .cover-desc{font-size:15px;color:var(--muted);max-width:760px;margin:0 0 22px;line-height:1.8;font-weight:600;}
+  .cover-desc b{color:var(--red);font-weight:900;}
+  .flow{display:flex;align-items:stretch;gap:6px;margin-bottom:4px;}
+  .flow-card{
+    flex:1;background:var(--card);border:3px solid var(--espresso);padding:16px 12px 14px;text-align:center;position:relative;
+    transition:transform var(--dur),box-shadow var(--dur);box-shadow:var(--hard-sm);
+  }
+  .flow-card:hover{transform:translate(-3px,-3px);box-shadow:7px 7px 0 var(--espresso);}
+  .fc-num{position:absolute;top:-3px;left:-3px;min-width:34px;height:34px;background:var(--espresso);color:var(--gold-bright);font-size:16px;font-weight:900;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums;}
+  .fc-ico{width:38px;height:38px;margin:6px auto 0;color:var(--red);}
+  .fc-t{font-weight:900;font-size:16.5px;margin-top:8px;letter-spacing:1px;}
+  .fc-d{font-size:12.5px;color:var(--muted);margin-top:3px;font-weight:600;}
+  .flow-arrow{align-self:center;color:var(--espresso);flex-shrink:0;}
+  .flow-arrow svg{width:22px;height:22px;}
+  .cover-nav{justify-content:center;padding-top:26px;border-top:none;}
+  .btn-enter{padding:17px 44px;font-size:18px;background:var(--red);color:#fff;box-shadow:var(--hard);}
+  .btn-enter:hover{background:var(--red-deep);box-shadow:8px 8px 0 var(--espresso);}
+  .btn-enter .arw{display:inline-block;width:20px;height:20px;vertical-align:-4px;margin-left:8px;}
+
+  /* ===== 判刑书 ===== */
+  .verdict{
+    position:relative;border:3px solid var(--espresso);background:var(--card);
+    box-shadow:var(--hard);padding:0 0 20px;overflow:hidden;flex-shrink:0;
+    background-image:repeating-linear-gradient(0deg,transparent,transparent 27px,rgba(58,42,28,.03) 28px);
+  }
+  .verdict .doc-head{
+    display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+    background:var(--espresso);color:var(--paper);padding:12px 22px;border-bottom:3px solid var(--espresso);
+  }
+  .verdict .doc-head .court{font-size:15px;font-weight:900;letter-spacing:2px;display:flex;align-items:center;gap:10px;}
+  .verdict .doc-head .court svg{width:24px;height:24px;color:var(--gold-bright);}
+  .verdict .doc-head .no{font-size:13.5px;color:var(--gold-bright);font-weight:700;letter-spacing:1px;
+    font-family:"JetBrains Mono","SFMono-Regular",Consolas,monospace;}
+  .verdict-body{padding:22px 26px 0;}
+  .charge-row{display:flex;align-items:center;gap:18px;margin-bottom:2px;}
+  .charge-row .gavel-big{width:64px;height:64px;flex-shrink:0;color:var(--espresso);transform:rotate(-16deg);}
+  .verdict .charge{font-size:clamp(34px,4.6vw,54px);font-weight:900;color:var(--red);margin:0;letter-spacing:2px;line-height:1.05;}
+  .verdict .axis-tag{font-size:13px;color:var(--gold);font-weight:900;letter-spacing:2px;margin:8px 0 16px;
+    font-family:"JetBrains Mono","SFMono-Regular",Consolas,monospace;}
+  .sentence-callout{
+    background:var(--red);color:#fff;border:3px solid var(--espresso);
+    padding:0;margin:0 0 18px;display:flex;align-items:stretch;box-shadow:var(--hard-sm);
+  }
+  .sentence-callout .sc-k{
+    font-size:14px;font-weight:900;background:var(--espresso);color:var(--gold-bright);
+    padding:14px 14px;letter-spacing:3px;flex-shrink:0;display:flex;align-items:center;
+  }
+  .sentence-callout .sc-v{flex:1;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:14px 16px;}
+  .sc-line{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:1px;line-height:1.25;}
+  .sc-charge{font-size:clamp(19px,2.4vw,24px);}
+  .sc-sentence{font-size:clamp(16px,2vw,20px);}
+  .sentence-callout .sc-v .chain{width:24px;height:24px;flex-shrink:0;color:#ffd9d2;}
+  .vgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 36px;}
+  .vrow{display:flex;gap:12px;padding:11px 0;border-bottom:2px dashed rgba(58,42,28,.25);font-size:14.5px;font-weight:600;}
+  .vrow.span2{grid-column:1/-1;}
+  .vrow .k{flex:0 0 84px;font-weight:900;color:var(--red-deep);letter-spacing:1px;}
+  .vrow .v{flex:1;}
+  .vrow .v ul{margin:0;padding-left:20px;}
+  .vrow .v li::marker{color:var(--red);font-weight:900;}
+  .verdict .disclaimer{margin:16px 26px 0;font-size:12px;color:var(--muted);background:var(--paper2);padding:10px 14px;border-left:6px solid var(--gold);font-weight:600;}
+  .stamp{
+    position:absolute;top:88px;right:24px;width:118px;height:118px;
+    border:5px double var(--red);border-radius:50%;color:var(--red);
+    display:flex;align-items:center;justify-content:center;font-size:29px;font-weight:900;letter-spacing:4px;
+    transform:rotate(-14deg);opacity:.85;pointer-events:none;mix-blend-mode:multiply;
+  }
+  .verdict .gavel-big{animation:drop .42s cubic-bezier(.2,1.4,.4,1) both;}
+  @keyframes drop{from{transform:rotate(-70deg) translateY(-26px);opacity:0;}to{transform:rotate(-16deg) translateY(0);opacity:1;}}
+
+  /* 宣判页附注卡 */
+  .verdict-notes{margin-top:14px;flex-shrink:0;
+    background:var(--paper2);border:3px solid var(--espresso);border-left:8px solid var(--red);
+    padding:12px 16px;font-size:12.5px;color:var(--muted);font-weight:600;line-height:1.7;}
+  .verdict-notes b{color:var(--espresso);font-weight:900;letter-spacing:1px;}
+  .verdict-notes .nl{color:var(--red);font-weight:900;}
+
+  /* ===== 宣判页：一屏紧凑（不滚轮） ===== */
+  .panel[data-step="5"]{justify-content:flex-start;}
+  .panel[data-step="5"] .verdict{padding-bottom:14px;}
+  .panel[data-step="5"] .verdict .doc-head{padding:9px 20px;}
+  .panel[data-step="5"] .verdict-body{padding:16px 22px 0;}
+  .panel[data-step="5"] .charge-row{gap:14px;}
+  .panel[data-step="5"] .charge-row .gavel-big{width:52px;height:52px;}
+  .panel[data-step="5"] .verdict .charge{font-size:clamp(28px,3.4vw,42px);}
+  .panel[data-step="5"] .verdict .axis-tag{margin:6px 0 12px;font-size:12.5px;}
+  .panel[data-step="5"] .sentence-callout{margin-bottom:14px;}
+  .panel[data-step="5"] .sentence-callout .sc-k{padding:11px 12px;font-size:13px;}
+  .panel[data-step="5"] .sentence-callout .sc-v{padding:10px 16px;}
+  .panel[data-step="5"] .sentence-callout .sc-v .chain{width:22px;height:22px;}
+  .panel[data-step="5"] .vrow{padding:8px 0;font-size:14px;}
+  .panel[data-step="5"] .vrow .k{flex-basis:78px;}
+  .panel[data-step="5"] .vgrid{gap:0 30px;}
+  .panel[data-step="5"] .verdict .disclaimer{margin:12px 22px 0;font-size:11.5px;padding:8px 12px;}
+  .panel[data-step="5"] .stamp{width:100px;height:100px;font-size:25px;top:66px;right:20px;}
+  .panel[data-step="5"] .verdict-notes{margin-top:10px;padding:9px 14px;font-size:12px;}
+  .panel[data-step="5"] .nav{margin-top:12px;padding-top:12px;}
+  .panel[data-step="5"] .nav button{min-height:46px;padding:11px 18px;font-size:14.5px;}
+
+  /* ===== 全站主题色分工 =====
+     红 = 仪式色：封面 / 当庭宣判 / 海报（结论时刻专用）
+     靛蓝 = 案发现场(1) + 被告登记(4)：查证阶段
+     深金 = 犯罪土壤(2)　苔绿 = 减刑事由(3) */
+  :is([data-step="1"],[data-step="4"]) .phead{background:var(--indigo);}
+  [data-step="2"] .phead{background:var(--gold);}
+  [data-step="3"] .phead{background:var(--jade);}
+  :is([data-step="1"],[data-step="4"]) .phint{border-left-color:var(--indigo);}
+  [data-step="2"] .phint{border-left-color:var(--gold);}
+  [data-step="3"] .phint{border-left-color:var(--jade);}
+  :is([data-step="1"],[data-step="4"]) .phint .hl{color:var(--indigo);background:#dde6f2;}
+  [data-step="2"] .phint .hl{color:var(--gold);background:#f4ead0;}
+  [data-step="3"] .phint .hl{color:var(--jade);background:#e3ecdd;}
+  :is([data-step="1"],[data-step="4"]) .docket{border-color:var(--indigo);}
+  [data-step="2"] .docket{border-color:var(--gold);}
+  [data-step="3"] .docket{border-color:var(--jade);}
+  :is([data-step="1"],[data-step="4"]) .dh-c{color:var(--indigo);background:#dde6f2;}
+  [data-step="2"] .dh-c{color:var(--gold);background:#f4ead0;}
+  [data-step="3"] .dh-c{color:var(--jade);background:#e3ecdd;}
+  :is([data-step="1"],[data-step="4"]) .nav .btn-next{background:var(--indigo);color:#fff;}
+  :is([data-step="1"],[data-step="4"]) .nav .btn-next:hover{background:#1e3a61;color:#fff;}
+  [data-step="2"] .nav .btn-next{background:var(--gold);color:#fff;}
+  [data-step="2"] .nav .btn-next:hover{background:#6a5015;color:#fff;}
+  [data-step="3"] .nav .btn-next{background:var(--jade);color:#fff;}
+  [data-step="3"] .nav .btn-next:hover{background:#33562f;color:#fff;}
+  #docketBody .chip .x{background:var(--indigo);}
+  #soilBody .chip .x{background:var(--gold);}
+  #mitBody .chip .x{background:var(--jade);}
+  /* 左栏当前步圆点同步主题色 */
+  .app[data-theme="1"] .step.active .dot,
+  .app[data-theme="4"] .step.active .dot{background:var(--indigo);border-color:var(--indigo);}
+  .app[data-theme="2"] .step.active .dot{background:var(--gold);border-color:var(--gold);color:#fff;}
+  .app[data-theme="3"] .step.active .dot{background:var(--jade);border-color:var(--jade);}
+  .app[data-theme="5"] .step.active .dot{background:var(--red);border-color:var(--red);}
+
+  /* ===== 选项框主题化：上面选项一个色，底下说明边框一个色 ===== */
+  :is([data-step="1"],[data-step="4"]) .opt{border-color:var(--indigo);}
+  :is([data-step="1"],[data-step="4"]) .opt .num{background:var(--indigo);color:#fff;}
+  :is([data-step="1"],[data-step="4"]) .opt.on{background:var(--indigo);color:var(--paper);}
+  :is([data-step="1"],[data-step="4"]) .opt.on:hover{background:#1e3a61;}
+  :is([data-step="1"],[data-step="4"]) .opt.on .num{background:var(--paper);color:var(--indigo);}
+  :is([data-step="1"],[data-step="4"]) .note-card{border-left-color:var(--indigo);}
+  [data-step="2"] .opt{border-color:var(--gold);}
+  [data-step="2"] .opt .num{background:var(--gold);color:#fff;}
+  [data-step="2"] .opt.on{background:var(--gold);color:#fff;}
+  [data-step="2"] .opt.on:hover{background:#6a5015;}
+  [data-step="2"] .opt.on .num{background:#fff;color:var(--gold);}
+  [data-step="2"] .note-card{border-left-color:var(--gold);}
+  [data-step="2"] .atmo .opt b{color:var(--gold);}
+  [data-step="2"] .atmo .opt.on{border-left-color:#f5e3bb;}
+  [data-step="2"] .atmo .opt.on::before{border-color:#fff;
+    background:linear-gradient(45deg,#fff 45%,transparent 45%) no-repeat,linear-gradient(-45deg,#fff 45%,transparent 45%) no-repeat;
+    background-size:13px 13px;background-position:0 0,7px 7px;}
+  [data-step="2"] .atmo .opt.on b{color:#f5e3bb;}
+  [data-step="3"] .opt{border-color:var(--jade);}
+  [data-step="3"] .opt .num{background:var(--jade);color:#fff;}
+  [data-step="3"] .opt.on{background:var(--jade);color:#fff;}
+  [data-step="3"] .opt.on:hover{background:#33562f;}
+  [data-step="3"] .opt.on .num{background:#fff;color:var(--jade);}
+  [data-step="3"] .note-card{border-left-color:var(--jade);}
+
+  /* ===== 被告登记：输入框 ===== */
+  .name-field{border:3px solid var(--espresso);background:var(--card);box-shadow:var(--hard-sm);padding:24px 24px;flex-shrink:0;}
+  .name-field label{display:block;font-size:13px;font-weight:900;letter-spacing:2px;color:var(--indigo);margin-bottom:10px;}
+  .name-field input{
+    width:100%;font-family:inherit;font-size:20px;font-weight:800;color:var(--espresso);
+    background:var(--paper);border:3px solid var(--espresso);padding:16px 18px;outline:none;
+    transition:border-color var(--dur),box-shadow var(--dur);
+  }
+  .name-field input::placeholder{color:#a39880;font-weight:600;font-size:15px;}
+  .name-field input:focus{border-color:var(--indigo);box-shadow:5px 5px 0 rgba(43,76,126,.20);}
+  .name-hint{font-size:12.5px;color:var(--muted);margin-top:10px;font-weight:600;}
+  .name-quick{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px;align-items:center;}
+  .name-quick .nq-t{font-size:12px;font-weight:900;letter-spacing:2px;color:var(--muted);margin-right:2px;}
+  .nq{
+    font-family:inherit;font-size:13.5px;font-weight:800;color:var(--espresso);
+    background:var(--paper);border:3px solid var(--espresso);padding:9px 14px;
+    transition:transform var(--dur),box-shadow var(--dur),background var(--dur),color var(--dur);
+    box-shadow:3px 3px 0 rgba(58,42,28,.22);
+  }
+  .nq:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 rgba(58,42,28,.28);background:#fff;}
+  .nq:active{transform:translate(1px,1px);box-shadow:1px 1px 0 rgba(58,42,28,.22);}
+
+  /* ===== 海报弹窗 ===== */
+  .modal{position:fixed;inset:0;background:rgba(38,26,17,.85);display:none;align-items:center;justify-content:center;z-index:100;padding:24px;}
+  .modal.show{display:flex;}
+  .modal-box{
+    background:var(--paper);border:3px solid var(--espresso);box-shadow:10px 10px 0 var(--espresso);
+    padding:18px;max-width:min(92vw,560px);max-height:92vh;display:flex;flex-direction:column;gap:14px;
+  }
+  .modal-box:focus{outline:none;}
+  .modal-box .m-title{font-weight:900;font-size:16px;letter-spacing:2px;display:flex;align-items:center;gap:10px;}
+  .modal-box .m-title svg{width:24px;height:24px;color:var(--red);}
+  .modal-box img{max-height:62vh;max-width:100%;object-fit:contain;border:3px solid var(--espresso);align-self:center;background:#fff;}
+  .modal-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .modal-actions button{
+    font-size:14.5px;font-weight:900;padding:12px 20px;min-height:46px;
+    border:3px solid var(--espresso);background:var(--paper);color:var(--espresso);
+    transition:transform var(--dur),box-shadow var(--dur),background var(--dur);box-shadow:var(--hard-sm);
+  }
+  .modal-actions button:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--espresso);}
+  .modal-actions .p-btn{background:var(--red);color:#fff;}
+  .modal-actions .p-btn:hover{background:var(--red-deep);}
+
+  /* ===== toast ===== */
+  .toast{
+    position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(12px);
+    background:var(--espresso);color:var(--paper);padding:12px 22px;border:3px solid var(--espresso);
+    font-size:14px;font-weight:800;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:120;
+    box-shadow:var(--hard-sm);letter-spacing:1px;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* ===== 响应式 ===== */
+  @media(max-width:860px){
+    body{overflow:auto;height:auto;}
+    html{height:auto;}
+    .app-shell{padding:10px;}
+    .app{box-shadow:6px 6px 0 var(--espresso);}
+    .app-body{grid-template-columns:1fr;}
+    .rail{border-right:none;border-bottom:3px solid var(--espresso3);overflow:visible;padding:14px 12px;}
+    .rail-cap{display:none;}
+    .steps{flex-direction:row;flex-wrap:wrap;gap:8px;}
+    .steps::before{display:none;}
+    .step{padding:6px;width:auto;}
+    .step .dot{width:38px;height:38px;font-size:15px;}
+    .step .ico{display:none;}
+    .step .st{font-size:13px;}
+    .rail-note{display:none;}
+    .stage{padding:18px 14px;overflow:visible;}
+    .panel{min-height:62vh;}
+    .flow{flex-direction:column;}
+    .flow-arrow{transform:rotate(90deg);}
+    .app-head h1{font-size:23px;}
+    .vgrid{grid-template-columns:1fr;}
+    .stamp{width:92px;height:92px;font-size:22px;top:76px;right:14px;}
+    .bg-deco .wm{font-size:160px;}
+    .verdict-body{padding:16px 16px 0;}
+    .sentence-callout{flex-direction:column;}
+    .sentence-callout .sc-k{padding:8px 14px;}
+    .nav{flex-direction:column;align-items:stretch;}
+    .nav-left,.nav-right{justify-content:stretch;}
+    .nav-left button,.nav-right button{flex:1;justify-content:center;}
+    .docket{min-height:96px;}
+  }
+
+  /* 动效减弱 */
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}
+  }
+</style>
+</head>
+<body>
+<div class="bg-deco">
+  <div class="wm wm1">判</div>
+  <div class="wm wm2">刑</div>
+</div>
+<div class="topbar"></div>
+<div class="app-shell">
+  <div class="app">
+
+    <header class="app-head">
+      <div class="hbrand">
+        <div class="seal">审判</div>
+        <div>
+          <div class="org">职场审判庭</div>
+          <h1>同事判刑书</h1>
+        </div>
+      </div>
+      <p class="tagline">把那个让你<b>血压飙升</b>的同事，当庭定罪、送他坐牢。不用撕破脸，动动手指。</p>
+      <div class="stepbadge"><span id="stepNow">准备开庭</span></div>
+    </header>
+
+    <div class="app-body">
+      <nav class="rail" aria-label="审判流程">
+        <div class="rail-cap">审判流程</div>
+        <div class="steps">
+          <button type="button" class="step" data-step="1"><span class="dot"><span class="n">1</span></span><span class="st">案发现场</span><svg class="ico" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="butt"><circle cx="42" cy="42" r="26"/><path d="M61 61 L86 86" stroke-width="13"/></svg></button>
+          <button type="button" class="step" data-step="2"><span class="dot"><span class="n">2</span></span><span class="st">犯罪土壤</span><svg class="ico" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="butt"><path d="M8 30h84M8 56h84M8 82h84"/><path d="M32 30l-7 26h14M62 56l-7 26h14" stroke-width="7"/></svg></button>
+          <button type="button" class="step" data-step="3"><span class="dot"><span class="n">3</span></span><span class="st">减刑事由</span><svg class="ico" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"><path d="M50 14v66M26 80h48M16 34h68"/><path d="M16 34L4 60h24zM84 34L72 60h24z"/></svg></button>
+          <button type="button" class="step" data-step="4"><span class="dot"><span class="n">4</span></span><span class="st">被告登记</span><svg class="ico" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"><rect x="10" y="22" width="80" height="58" rx="4"/><circle cx="32" cy="44" r="10"/><path d="M20 70c3-10 8-14 12-14s9 4 12 14"/><path d="M58 40h24M58 54h24M58 66h14"/></svg></button>
+          <button type="button" class="step" data-step="5"><span class="dot"><span class="n">5</span></span><span class="st">当庭宣判</span><svg class="ico" viewBox="0 0 100 100" fill="currentColor"><rect x="46" y="34" width="10" height="48"/><rect x="26" y="12" width="50" height="22"/><rect x="18" y="82" width="66" height="10"/></svg></button>
+        </div>
+        <div class="rail-note">纯前端玩具 · 零上传<br><b>仅供解压，别拿去对线。</b></div>
+      </nav>
+
+      <main class="stage">
+        <!-- STEP 0 : 封面 -->
+        <section class="panel cover active" data-step="0" aria-label="封面">
+          <div class="cover-kicker">职场审判庭 · 今日开庭</div>
+          <h2 class="cover-title">今天，工位上又有同事在<mark>犯罪</mark>。</h2>
+          <p class="cover-desc">就是那个人——临下班甩个"不急但今晚要"的活；开会抢功、复盘推锅；把"辛苦了"当工资发；凡事标紧急，制造假性火灾。你早就想审判他了，只是缺一张判决书。<b>今天，你来当法官。</b></p>
+          <div class="flow" aria-hidden="true">
+            <div class="flow-card"><div class="fc-num">1</div><svg class="fc-ico" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="butt"><circle cx="42" cy="42" r="26"/><path d="M61 61 L86 86" stroke-width="13"/></svg><div class="fc-t">案发现场</div><div class="fc-d">记录他的罪证</div></div>
+            <div class="flow-arrow"><svg viewBox="0 0 100 100" fill="currentColor"><path d="M10 42h54V26l36 24-36 24V58H10z"/></svg></div>
+            <div class="flow-card"><div class="fc-num">2</div><svg class="fc-ico" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="butt"><path d="M8 30h84M8 56h84M8 82h84"/><path d="M32 30l-7 26h14M62 56l-7 26h14" stroke-width="7"/></svg><div class="fc-t">犯罪土壤</div><div class="fc-d">看他在哪长歪</div></div>
+            <div class="flow-arrow"><svg viewBox="0 0 100 100" fill="currentColor"><path d="M10 42h54V26l36 24-36 24V58H10z"/></svg></div>
+            <div class="flow-card"><div class="fc-num">3</div><svg class="fc-ico" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"><path d="M50 14v66M26 80h48M16 34h68"/><path d="M16 34L4 60h24zM84 34L72 60h24z"/></svg><div class="fc-t">减刑事由</div><div class="fc-d">酌情留条后路</div></div>
+            <div class="flow-arrow"><svg viewBox="0 0 100 100" fill="currentColor"><path d="M10 42h54V26l36 24-36 24V58H10z"/></svg></div>
+            <div class="flow-card"><div class="fc-num">4</div><svg class="fc-ico" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"><rect x="10" y="22" width="80" height="58" rx="4"/><circle cx="32" cy="44" r="10"/><path d="M20 70c3-10 8-14 12-14s9 4 12 14"/><path d="M58 40h24M58 54h24M58 66h14"/></svg><div class="fc-t">被告登记</div><div class="fc-d">记下他的名字</div></div>
+            <div class="flow-arrow"><svg viewBox="0 0 100 100" fill="currentColor"><path d="M10 42h54V26l36 24-36 24V58H10z"/></svg></div>
+            <div class="flow-card"><div class="fc-num">5</div><svg class="fc-ico" viewBox="0 0 100 100" fill="currentColor"><rect x="46" y="34" width="10" height="48"/><rect x="26" y="12" width="50" height="22"/><rect x="18" y="82" width="66" height="10"/></svg><div class="fc-t">当庭宣判</div><div class="fc-d">判刑书 · 牢底坐穿</div></div>
+          </div>
+          <div class="nav cover-nav">
+            <button type="button" class="btn-next btn-enter" id="enterBtn">进入案发现场<svg class="arw" viewBox="0 0 100 100" fill="currentColor"><path d="M10 42h54V26l36 24-36 24V58H10z"/></svg></button>
+          </div>
+        </section>
+
+        <!-- STEP 1 : 案发现场 -->
+        <section class="panel" data-step="1" aria-label="案发现场">
+          <div class="phead"><span class="kicker">案发现场</span><h2>记录他的罪证</h2><span class="pico"><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="butt"><circle cx="42" cy="42" r="26"/><path d="M61 61 L86 86" stroke-width="13"/></svg></span></div>
+          <div class="phint">已进入案发现场。至少勾选 <span class="hl">2</span> 条罪证才能立案，最多 4 条——证据链太短，法官很难办。</div>
+          <div class="grid-crimes" id="behaviors" role="group" aria-label="罪证列表"></div>
+          <div class="docket" id="docket">
+            <div class="docket-head"><span class="dh-t">立案清单 · 呈堂证供</span><span class="dh-c" id="docketCount">0 / 4</span></div>
+            <div class="docket-body" id="docketBody"></div>
+          </div>
+          <div class="note-card"><b>立案标准</b>　本庭采用"血压优先"原则：凡让你当场血压 +10 的行为，均可立案。单条不足以定罪，需 2–4 条形成证据链；<span class="nl">清单里的罪证可点"×"撤回</span>，翻供本庭概不受理。</div>
+          <div class="nav">
+            <div class="nav-left"><button type="button" data-go="0">← 返回封面</button></div>
+            <div class="nav-right"><button type="button" class="btn-next" id="to2" disabled>下一步：犯罪土壤 <svg viewBox="0 0 100 100" fill="currentColor"><path d="M10 42h54V26l36 24-36 24V58H10z"/></svg></button></div>
+          </div>
+        </section>
+
+        <!-- STEP 2 : 犯罪土壤 -->
+        <section class="panel" data-step="2" aria-label="犯罪土壤">
+          <div class="phead"><span class="kicker">犯罪土壤</span><h2>他茁壮成长的那片土壤</h2><span class="pico"><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="butt"><path d="M8 30h84M8 56h84M8 82h84"/><path d="M32 30l-7 26h14M62 56l-7 26h14" stroke-width="7"/></svg></span></div>
+          <div class="phint">这些"组织气氛"可选，中了几条点几下，会写进判刑书当背景。<span class="hl">土壤不决定罪名，但影响刑期</span>——好的土壤能让罪证长势喜人。</div>
+          <ul class="atmo" id="atmosphere"></ul>
+          <div class="docket" id="soilDocket">
+            <div class="docket-head"><span class="dh-t">土壤勘验记录</span><span class="dh-c" id="soilCount">0 条中招</span></div>
+            <div class="docket-body" id="soilBody"></div>
+          </div>
+          <div class="note-card"><b>勘验说明</b>　土壤属背景证据，选不选都不影响立案。<span class="nl">直接跳过不视为被告无罪</span>，视为你懒得写——本庭尊重每一种懒。</div>
+          <div class="nav">
+            <div class="nav-left"><button type="button" data-go="1">← 上一步</button></div>
+            <div class="nav-right"><button type="button" class="btn-next" data-go="3">下一步：量刑 <svg viewBox="0 0 100 100" fill="currentColor"><path d="M10 42h54V26l36 24-36 24V58H10z"/></svg></button></div>
+          </div>
+        </section>
+
+        <!-- STEP 3 : 减刑 -->
+        <section class="panel" data-step="3" aria-label="量刑">
+          <div class="phead"><span class="kicker">量刑</span><h2>要不要给他留条减刑的后路？</h2><span class="pico"><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"><path d="M50 14v66M26 80h48M16 34h68"/><path d="M16 34L4 60h24zM84 34L72 60h24z"/></svg></span></div>
+          <div class="phint">最多选 <span class="hl">2</span> 条。有选才写进判刑书，相当于你最后的仁慈——<span class="hl">不选，就是铁石心肠</span>。</div>
+          <div class="grid-mit" id="mitigators" role="group" aria-label="减刑事由"></div>
+          <div class="docket" id="mitDocket">
+            <div class="docket-head"><span class="dh-t">从宽情节认定</span><span class="dh-c" id="mitCount">0 / 2</span></div>
+            <div class="docket-body" id="mitBody"></div>
+          </div>
+          <div class="note-card"><b>量刑原则</b>　本庭默认从重量刑，减刑事由仅记录被告的零星人性闪光，<span class="nl">不影响"牢底坐穿"的大方向</span>。心软是法官的隐私，判决书里只写结果。</div>
+          <div class="nav">
+            <div class="nav-left"><button type="button" data-go="2">← 上一步</button></div>
+            <div class="nav-right"><button type="button" class="btn-next" data-go="4">下一步：被告登记 <svg viewBox="0 0 100 100" fill="currentColor"><path d="M10 42h54V26l36 24-36 24V58H10z"/></svg></button></div>
+          </div>
+        </section>
+
+        <!-- STEP 4 : 被告登记 -->
+        <section class="panel" data-step="4" aria-label="被告登记">
+          <div class="phead"><span class="kicker">被告登记</span><h2>确认被告身份</h2><span class="pico"><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"><rect x="10" y="22" width="80" height="58" rx="4"/><circle cx="32" cy="44" r="10"/><path d="M20 70c3-10 8-14 12-14s9 4 12 14"/><path d="M58 40h24M58 54h24M58 66h14"/></svg></span></div>
+          <div class="phint">宣判前最后一道手续：给被告记个名。<span class="hl">强烈建议用外号</span>——实名登记，风险自理。</div>
+          <div class="name-field">
+            <label for="nameInput">被告姓名 / 外号</label>
+            <input id="nameInput" type="text" maxlength="12" placeholder="例：那个临下班甩活的 / 某哥 / 不敢写就留空" autocomplete="off">
+            <div class="name-hint">留空则默认「被告某同事」。姓名只写进判刑书和海报，零上传。</div>
+            <div class="name-quick">
+              <span class="nq-t">快捷落笔</span>
+              <button type="button" class="nq" data-n="临下班甩活侠">临下班甩活侠</button>
+              <button type="button" class="nq" data-n="甩锅侠">甩锅侠</button>
+              <button type="button" class="nq" data-n="抢功王">抢功王</button>
+              <button type="button" class="nq" data-n="画饼大师">画饼大师</button>
+              <button type="button" class="nq" data-n="已读不回怪">已读不回怪</button>
+            </div>
+          </div>
+          <div class="note-card"><b>登记说明</b>　本庭不鼓励实名登记——<span class="nl">写外号是对彼此最后的保护</span>。姓名将出现在判刑书与海报抬头，想清楚再落笔。</div>
+          <div class="docket" id="reviewDocket">
+            <div class="docket-head"><span class="dh-t">本案已立罪证 · 宣判前最后一眼</span><span class="dh-c" id="reCount">0 / 4</span></div>
+            <div class="docket-body" id="reBody"></div>
+          </div>
+          <div class="nav">
+            <div class="nav-left"><button type="button" data-go="3">← 上一步</button></div>
+            <div class="nav-right"><button type="button" class="btn-next" id="to5">当庭宣判 <svg viewBox="0 0 100 100" fill="currentColor"><rect x="46" y="34" width="10" height="48"/><rect x="26" y="12" width="50" height="22"/><rect x="18" y="82" width="66" height="10"/></svg></button></div>
+          </div>
+        </section>
+
+        <!-- STEP 5 : 宣判 -->
+        <section class="panel" data-step="5" aria-label="当庭宣判">
+          <div id="output"></div>
+          <div class="verdict-notes" id="verdictNotes"></div>
+          <div class="nav">
+            <div class="nav-left"><button type="button" data-go="3">← 上一步</button></div>
+            <div class="nav-right">
+              <button type="button" id="reroll">换一组判词</button>
+              <button type="button" id="shareBtn">分享链接</button>
+              <button type="button" id="copyText">复制全文</button>
+              <button type="button" class="btn-next" id="poster">复制一张海报</button>
+              <button type="button" id="restart">重新开庭</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+</div>
+
+<!-- 海报弹窗 -->
+<div class="modal" id="posterModal" role="dialog" aria-modal="true" aria-label="判刑海报">
+  <div class="modal-box" tabindex="-1">
+    <div class="m-title"><svg viewBox="0 0 100 100" fill="currentColor"><rect x="46" y="34" width="10" height="48"/><rect x="26" y="12" width="50" height="22"/><rect x="18" y="82" width="66" height="10"/></svg>判刑海报 · 可下载可转发</div>
+    <img id="posterImg" alt="判刑海报图片">
+    <div class="modal-actions">
+      <button type="button" class="p-btn" id="dlPoster">下载海报 PNG</button>
+      <button type="button" id="copyImg">复制图片</button>
+      <button type="button" id="closePoster">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ===== 数据 ===== */
+const BEHAVIORS = [
+  {id:'b1', label:'临下班甩个"不急但今晚要"的活', vec:{urg:2, blame:1}},
+  {id:'b2', label:'口头布置需求，出错全赖你没确认', vec:{blame:2, hyp:1}},
+  {id:'b3', label:'群里@全员，实则只关你一人',      vec:{urg:1, slack:1}},
+  {id:'b4', label:'开会抢功，复盘推锅',            vec:{credit:2, blame:1}},
+  {id:'b5', label:'把"辛苦了"当报酬发，钱一分不少', vec:{hyp:2}},
+  {id:'b6', label:'已读不回，转头催你秒回',        vec:{hyp:1, slack:1}},
+  {id:'b7', label:'凡事标"紧急"，制造假性火灾',     vec:{urg:2}},
+  {id:'b8', label:'摸鱼一整天，偏盯着你忙不忙',      vec:{slack:2}},
+  {id:'b9', label:'甩锅第一名，背锅你专属',          vec:{blame:2}},
+  {id:'b10',label:'甩完锅补一句"都是为你好"',        vec:{hyp:2, blame:1}},
+];
+
+const ATMOS = [
+  {id:'a1', text:'<b>甩锅成风</b>，人人自危'},
+  {id:'a2', text:'<b>加班=政治正确</b>，准点走像示威'},
+  {id:'a3', text:'<b>@全员成日常</b>，实则无关'},
+  {id:'a4', text:'<b>口头需求不落纸</b>，翻脸不认'},
+  {id:'a5', text:'<b>谎报军情</b>成习惯，处处皆急'},
+  {id:'a6', text:'<b>冒功甩锅</b>成循环播放'},
+];
+
+const AXES = {
+  blame:{
+    name:'甩锅罪',
+    defendant:'被告在责任面前精通瞬间蒸发术，出错必有人接，且大概率是你。',
+    charges:['甩锅惯犯罪','责任逃逸罪','职场背锅分销罪','甩锅界扛把子罪'],
+    sentences:['牢底坐穿，剥夺解释权终身','有期徒刑三年，缓期一个世纪','即刻收监，罚其全年单人背锅','无期徒刑，发配背锅一线'],
+    remarks:['遇事第一反应找人接锅，属实惯犯。','口头承诺从不留痕，专业逃逸。','黑锅分配精准命中你，有组织作案。'],
+    grades:['罪大恶极','重罪','轻罪（但恶心）'],
+    deviations:['遇事第一反应找人接锅','口头承诺从不留痕','黑锅永远精准分给你'],
+  },
+  credit:{
+    name:'冒功罪',
+    defendant:'被告对"我们"二字理解独到——凡是你的，皆可称为他的。',
+    charges:['冒功惯犯罪','会议抢功罪','成果收割罪','署名小偷罪'],
+    sentences:['罚其三年不许署名，永远排在最后','剥夺"我主导"发言权终身','有期徒刑两年，全程录屏示众','牢底坐穿，会议只配坐角落'],
+    remarks:['复盘时你的活变他的，铁证如山。','开会必提"我主导"，贪功无疑。','署名顺序永远往前挤，惯偷。'],
+    grades:['罪大恶极','重罪','轻罪（但恶心）'],
+    deviations:['复盘时你的活变他的','会议发言必提"我主导"','署名顺序永远往前挤'],
+  },
+  urg:{
+    name:'谎报军情罪',
+    defendant:'被告以制造紧迫感掩盖自身没规划，群消息全标红色是日常。',
+    charges:['谎报军情罪','假性火灾纵火罪','焦虑批发罪','狼来了惯犯罪'],
+    sentences:['罚其天天直面真实 deadline 忏悔','有期徒刑一年，禁用"紧急"二字','即刻收监，群消息统一改黑体','牢底坐穿，@全员需逐个审批'],
+    remarks:['把"不急但今晚要"当日常，欺诈。','用紧迫感掩盖没规划，纵火。','红色标记滥用成灾，纯纯扰民。'],
+    grades:['罪大恶极','重罪','轻罪（但恶心）'],
+    deviations:['把"不急但今晚要"当日常','用紧迫感掩盖没规划','红色标记滥用成灾'],
+  },
+  slack:{
+    name:'怠工罪',
+    defendant:'被告全天划水，却对他人的加班进度保有惊人的关注度。',
+    charges:['怠工摸鱼罪','工位幽灵罪','带薪隐身罪','产出蒸发罪'],
+    sentences:['罚其三年工位装摄像头，全程直播','剥夺摸鱼权终身，牢底坐穿','有期徒刑两年，进度每小时上报','即刻收监，发配产出一线'],
+    remarks:['全天划水偏关心你加班，变态。','交付时你在前他在后，隐身。','会议静音摸鱼两不误，专业。'],
+    grades:['罪大恶极','重罪','轻罪（但恶心）'],
+    deviations:['全天划水偏关心你加班','交付时你在前他在后','会议静音摸鱼两不误'],
+  },
+  hyp:{
+    name:'画饼PUA罪',
+    defendant:'被告用情绪价值抵扣物质报酬，仁慈话术之下稳稳藏着一只锅。',
+    charges:['画饼PUA罪','鸡汤投毒罪','道德绑架罪','为你好施法罪'],
+    sentences:['罚其三年只发饼不发薪，自食其果','剥夺"辛苦了"使用权终身','有期徒刑两年，禁谈情怀只谈钱','牢底坐穿，每日背诵劳动法'],
+    remarks:['把"辛苦了"当工资发，欺诈。','高标准对别人、宽松对自己，双标。','甩完锅补一句为你好，虚伪。'],
+    grades:['罪大恶极','重罪','轻罪（但恶心）'],
+    deviations:['用情绪价值抵物质报酬','高标准对别人宽松对自己','甩完锅补一句为你好'],
+  },
+};
+
+const MITIGATORS = [
+  {id:'m1', label:'偶尔也干点人事'},
+  {id:'m2', label:'请过一杯奶茶'},
+  {id:'m3', label:'甩锅时还会脸红'},
+  {id:'m4', label:'只是笨，不是坏'},
+  {id:'m5', label:'上面还有更毒的'},
+  {id:'m6', label:'好歹发工资（勉强算）'},
+];
+
+const STEP_LABELS=['案发现场 · 罪证','犯罪土壤','减刑事由','被告登记','当庭宣判'];
+const selected = new Set();
+const atmoSel = new Set();
+const mitSel = new Set();
+let current = null;
+let defendantName = '';
+let lastFocus = null;
+const $ = id => document.getElementById(id);
+
+/* ===== SVG 图标（全站无 emoji 图标） ===== */
+const SVG = {
+  gavel:'<svg viewBox="0 0 100 100" fill="currentColor" aria-hidden="true"><rect x="46" y="34" width="10" height="48"/><rect x="26" y="12" width="50" height="22"/><rect x="18" y="82" width="66" height="10"/></svg>',
+  chain:'<svg class="chain" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="9" aria-hidden="true"><circle cx="32" cy="34" r="17"/><circle cx="68" cy="66" r="17"/><path d="M42 46 L58 54" stroke-width="8"/></svg>',
+};
+
+/* ===== 渲染选项 ===== */
+function renderOptions(){
+  const b=$('behaviors'); b.innerHTML='';
+  BEHAVIORS.forEach((o,i)=>{
+    const el=document.createElement('button');
+    el.type='button';
+    el.className='opt'+(selected.has(o.id)?' on':'');
+    el.setAttribute('aria-pressed', selected.has(o.id)?'true':'false');
+    el.dataset.id=o.id;
+    el.innerHTML=`<span class="num">${i+1}</span>${o.label}`;
+    el.onclick=()=>{toggleSet(selected,o.id,el,4,'最多 4 条罪证');afterChange();renderDockets();};
+    b.appendChild(el);
+  });
+  const a=$('atmosphere'); a.innerHTML='';
+  ATMOS.forEach(o=>{
+    const li=document.createElement('li');
+    const btn=document.createElement('button');
+    btn.type='button';
+    btn.className='opt'+(atmoSel.has(o.id)?' on':'');
+    btn.setAttribute('aria-pressed', atmoSel.has(o.id)?'true':'false');
+    btn.dataset.id=o.id;
+    btn.innerHTML=o.text;
+    btn.onclick=()=>{
+      if(atmoSel.has(o.id)){atmoSel.delete(o.id);btn.classList.remove('on');btn.setAttribute('aria-pressed','false');}
+      else{atmoSel.add(o.id);btn.classList.add('on');btn.setAttribute('aria-pressed','true');}
+      renderDockets();
+    };
+    li.appendChild(btn); a.appendChild(li);
+  });
+  const m=$('mitigators'); m.innerHTML='';
+  MITIGATORS.forEach((o,i)=>{
+    const el=document.createElement('button');
+    el.type='button';
+    el.className='opt'+(mitSel.has(o.id)?' on':'');
+    el.setAttribute('aria-pressed', mitSel.has(o.id)?'true':'false');
+    el.dataset.id=o.id;
+    el.innerHTML=`<span class="num">${i+1}</span>${o.label}`;
+    el.onclick=()=>{toggleSet(mitSel,o.id,el,2,'减刑最多 2 条');renderDockets();};
+    m.appendChild(el);
+  });
+}
+function toggleSet(set,id,el,max,msg){
+  if(set.has(id)){set.delete(id);el.classList.remove('on');el.setAttribute('aria-pressed','false');}
+  else{if(set.size>=max){toast(msg);return;}set.add(id);el.classList.add('on');el.setAttribute('aria-pressed','true');}
+}
+function afterChange(){ $('to2').disabled = selected.size<2; }
+
+/* ===== 立案清单（实时 chips，可撤回） ===== */
+function chipHTML(label,id,kind){
+  return `<span class="chip">${label}<button type="button" class="x" data-kind="${kind}" data-id="${id}" aria-label="撤回 ${label}">×</button></span>`;
+}
+function renderDockets(){
+  $('docketCount').textContent = selected.size+' / 4';
+  const db=$('docketBody'); db.innerHTML='';
+  if(!selected.size){
+    db.innerHTML='<div class="docket-empty">尚未记录任何罪证。勾选上方至少 <b>2</b> 条，清单将在此生成，并成为呈堂证供。</div>';
+  }else{
+    [...selected].forEach(id=>{
+      const o=BEHAVIORS.find(x=>x.id===id);
+      db.insertAdjacentHTML('beforeend',chipHTML(o.label,o.id,'b'));
+    });
+  }
+  $('soilCount').textContent = atmoSel.size+' 条中招';
+  const sb=$('soilBody'); sb.innerHTML='';
+  if(!atmoSel.size){
+    sb.innerHTML='<div class="docket-empty">未标注犯罪土壤。可跳过——<b>跳过不视为被告无罪</b>，视为你懒得写。</div>';
+  }else{
+    [...atmoSel].forEach(id=>{
+      const o=ATMOS.find(x=>x.id===id);
+      sb.insertAdjacentHTML('beforeend',chipHTML(o.text.replace(/<\/?b>/g,''),o.id,'a'));
+    });
+  }
+  $('mitCount').textContent = mitSel.size+' / 2';
+  const mb=$('mitBody'); mb.innerHTML='';
+  if(!mitSel.size){
+    mb.innerHTML='<div class="docket-empty">被告毫无悔过表现，无从轻情节。<b>本庭尊重你的铁石心肠。</b></div>';
+  }else{
+    [...mitSel].forEach(id=>{
+      const o=MITIGATORS.find(x=>x.id===id);
+      mb.insertAdjacentHTML('beforeend',chipHTML(o.label,o.id,'m'));
+    });
+  }
+  // 登记页罪证回顾
+  $('reCount').textContent = selected.size+' / 4';
+  const rb=$('reBody'); rb.innerHTML='';
+  if(!selected.size){
+    rb.innerHTML='<div class="docket-empty">本案尚无罪证——<b>这不大可能</b>，回上一步补两条。</div>';
+  }else{
+    [...selected].forEach(id=>{
+      const o=BEHAVIORS.find(x=>x.id===id);
+      rb.insertAdjacentHTML('beforeend',chipHTML(o.label,o.id,'b'));
+    });
+  }
+  document.querySelectorAll('.chip .x').forEach(x=>x.onclick=()=>{
+    const kind=x.dataset.kind,id=x.dataset.id;
+    if(kind==='b'){selected.delete(id);afterChange();}
+    if(kind==='a')atmoSel.delete(id);
+    if(kind==='m')mitSel.delete(id);
+    syncOptStates();renderDockets();
+  });
+}
+function syncOptStates(){
+  document.querySelectorAll('#behaviors .opt').forEach(el=>{
+    const on=selected.has(el.dataset.id);
+    el.classList.toggle('on',on);el.setAttribute('aria-pressed',on?'true':'false');
+  });
+  document.querySelectorAll('#atmosphere .opt').forEach(el=>{
+    const on=atmoSel.has(el.dataset.id);
+    el.classList.toggle('on',on);el.setAttribute('aria-pressed',on?'true':'false');
+  });
+  document.querySelectorAll('#mitigators .opt').forEach(el=>{
+    const on=mitSel.has(el.dataset.id);
+    el.classList.toggle('on',on);el.setAttribute('aria-pressed',on?'true':'false');
+  });
+}
+
+function showStep(n){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',+p.dataset.step===n));
+  document.querySelectorAll('.step').forEach(s=>{
+    const sn=+s.dataset.step;
+    s.classList.toggle('active',sn===n);
+    s.classList.toggle('done',sn<n && n>0);
+  });
+  document.querySelector('.app').dataset.theme = (n>=1&&n<=5)?n:'';
+  $('stepNow').textContent = n===0 ? '准备开庭' : ('第 '+n+' 步 · '+STEP_LABELS[n-1]);
+  if(n===5) generate();
+}
+function dominantAxis(){
+  const sum={blame:0,credit:0,urg:0,slack:0,hyp:0};
+  selected.forEach(id=>{const b=BEHAVIORS.find(x=>x.id===id);for(const k in b.vec)sum[k]+=b.vec[k];});
+  let best='blame',ba=-1;
+  for(const k in sum){const a=Math.abs(sum[k]);if(a>ba){ba=a;best=k;}}
+  return best;
+}
+const rand=a=>a[Math.floor(Math.random()*a.length)];
+const caseNo=()=>'CR-'+Math.random().toString(36).slice(2,6).toUpperCase();
+
+function buildVerdict(){
+  const axis=dominantAxis();const A=AXES[axis];
+  return{axis,charge:rand(A.charges),sentence:rand(A.sentences),remark:rand(A.remarks),
+    grade:rand(A.grades),deviation:rand(A.deviations),defendant:A.defendant,caseno:caseNo(),
+    name:(defendantName||'').trim()||'被告某同事',
+    atmoList:[...atmoSel].map(id=>ATMOS.find(x=>x.id===id).text.replace(/<\/?b>/g,'')),
+    mitList:[...mitSel].map(id=>MITIGATORS.find(x=>x.id===id).label)};
+}
+function verdictHTML(v){
+  const atmo=v.atmoList.length?v.atmoList.map(t=>`<li>${t}</li>`).join(''):'<li>（未标注犯罪土壤）</li>';
+  const mit=v.mitList.length?v.mitList.map(t=>`<li>${t}</li>`).join(''):'<li>（无从轻，死不足惜）</li>';
+  return `<div class="verdict">
+    <div class="stamp">有罪</div>
+    <div class="doc-head"><span class="court">${SVG.gavel}职场审判庭 · 判刑书</span><span class="no">案号 ${v.caseno}</span></div>
+    <div class="verdict-body">
+      <div class="charge-row"><span class="gavel-big">${SVG.gavel}</span><span class="charge">${v.name}</span></div>
+      <div class="axis-tag">◆ 定罪依据：${AXES[v.axis].name}</div>
+      <div class="sentence-callout"><span class="sc-k">刑期</span><span class="sc-v">
+        <span class="sc-line sc-charge">${SVG.chain}<span>${v.charge}</span></span>
+        <span class="sc-line sc-sentence">${v.sentence}</span>
+      </span></div>
+      <div class="vgrid">
+        <div class="vrow span2"><span class="k">判词</span><span class="v">${v.remark}——${v.defendant}</span></div>
+        <div class="vrow"><span class="k">罪级</span><span class="v">${v.grade}</span></div>
+        <div class="vrow"><span class="k">主要罪行</span><span class="v">${v.deviation}</span></div>
+        <div class="vrow span2"><span class="k">犯罪土壤</span><span class="v"><ul>${atmo}</ul></span></div>
+        <div class="vrow span2"><span class="k">减刑事由</span><span class="v"><ul>${mit}</ul></span></div>
+      </div>
+    </div>
+    <div class="disclaimer">本判刑书为原创解压玩具，不构成任何实名评价、职场建议或人身攻击。对号入座者，说明你也累了。</div>
+  </div>`;
+}
+function verdictNotesHTML(){
+  return `<b>本庭附注</b>　① 判刑书纯属虚构，<span class="nl">对号入座说明他也这么想你</span>；② 建议把海报发给同病相怜的工友，集体旁听疗效佳；③ 本庭不接受上诉，但接受奶茶。零上传，选项只存在你自己浏览器里。`;
+}
+function verdictText(v){
+  const atmo=v.atmoList.length?v.atmoList.join('、'):'无';
+  const mit=v.mitList.length?v.mitList.join('、'):'无';
+  return ['【同事判刑书】',
+    `被告姓名：${v.name}`,
+    `罪名：${v.charge}`,
+    `案号：${v.caseno}（定罪依据：${AXES[v.axis].name}）`,
+    `刑期：${v.sentence}`,
+    `判词：${v.remark}——${v.defendant}`,
+    `罪级：${v.grade}`,
+    `主要罪行：${v.deviation}`,
+    `犯罪土壤：${atmo}`,
+    `减刑事由：${mit}`,
+    '—— 职场审判庭（解压玩具，非实名评价/建议/攻击）'].join('\n');
+}
+function generate(){
+  if(selected.size<2){toast('至少选 2 条罪证');return;}
+  current=buildVerdict();
+  $('output').innerHTML=verdictHTML(current);
+  $('verdictNotes').innerHTML=verdictNotesHTML();
+}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2400);}
+
+/* ===== 海报（Canvas · 无 emoji · 无错位条纹 · 重排版） ===== */
+const FONT='"PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif';
+const MONO='"JetBrains Mono","SFMono-Regular","Courier New",monospace';
+function posterLayout(ctx,v,draw){
+  const W=820,pad=56;
+  const textW=W-pad*2-300;            /* 字段文字宽：右侧 300 留给大印章，永不重叠 */
+  const set=(w,s)=>ctx.font=`${w} ${s}px ${FONT}`;
+  const wrapW=(text,w,s,maxw)=>{set(w,s);const out=[];let line='';for(const ch of text){if(ctx.measureText(line+ch).width>maxw){out.push(line);line=ch;}else line+=ch;}if(line)out.push(line);return out;};
+  // ---- 抬头：深咖条 + 金左边条 ----
+  if(draw){
+    ctx.fillStyle='#3a2a1c';ctx.fillRect(0,0,W,96);
+    ctx.fillStyle='#d9a93b';ctx.fillRect(0,0,8,96);
+  }
+  set(900,32);ctx.textAlign='left';ctx.fillStyle='#f2ecdd';
+  if(draw)ctx.fillText('职场审判庭 · 判刑书',pad+8,60);
+  set(700,16);ctx.textAlign='right';ctx.fillStyle='#d9a93b';
+  if(draw)ctx.fillText('案号 '+v.caseno,W-pad,60);
+  // ---- 红条 ----
+  if(draw){ctx.fillStyle='#c8281b';ctx.fillRect(0,96,W,14);}
+  // ---- 被告名称：超大红字（海报主视觉） ----
+  let y=184;
+  const nl=wrapW(v.name||'被告某同事',900,62,W-pad*2);
+  set(900,62);ctx.textAlign='center';ctx.fillStyle='#c8281b';
+  nl.forEach(l=>{if(draw)ctx.fillText(l,W/2,y);y+=72;});
+  // ---- 定罪依据 ----
+  set(900,19);ctx.fillStyle='#7d5f1a';
+  if(draw)ctx.fillText('◆ 定罪依据：'+AXES[v.axis].name,W/2,239);
+  // ---- 粗黑分隔线 ----
+  if(draw){ctx.strokeStyle='#3a2a1c';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(pad,265);ctx.lineTo(W-pad,265);ctx.stroke();}
+  // ---- 刑期红块：罪名 + 刑期 同块，白字居中 ----
+  y=309;
+  const sl=wrapW(v.sentence,900,32,W-pad*2-158);
+  const blockH=20+42+sl.length*42+18;
+  const tcx=pad+118+(W-pad*2-118)/2;
+  if(draw){
+    ctx.fillStyle='#c8281b';ctx.fillRect(pad,y,W-pad*2,blockH);
+    ctx.strokeStyle='#3a2a1c';ctx.lineWidth=3;ctx.strokeRect(pad,y,W-pad*2,blockH);
+    ctx.fillStyle='#3a2a1c';ctx.fillRect(pad,y,118,blockH);
+    ctx.fillStyle='#d9a93b';set(900,16);ctx.textAlign='center';
+    ctx.fillText('刑期',pad+59,y+blockH/2+6);
+  }
+  /* 罪名行（块内第一行，34px） */
+  set(900,34);ctx.fillStyle='#ffffff';ctx.textAlign='center';
+  if(draw)ctx.fillText(v.charge,tcx,y+50);
+  /* 刑期行（块内第二行起，32px，垂直居中） */
+  set(900,32);ctx.fillStyle='#ffffff';ctx.textAlign='center';
+  const sStart=y+20+42+30;
+  sl.forEach((l,i)=>{if(draw)ctx.fillText(l,tcx,sStart+i*42);});
+  y+=blockH+40;
+  // ---- 字段区：标签黑块 32px/17px，内容 24px/行距 36，字段间距 24 ----
+  const field=(label,value,isList)=>{
+    ctx.textAlign='left';   /* 关键：刑期块留下的是 center，必须改回左对齐 */
+    set(900,17);ctx.fillStyle='#3a2a1c';
+    const lw=ctx.measureText(label).width+28;
+    if(draw)ctx.fillRect(pad,y-23,lw,32);
+    ctx.fillStyle='#f2ecdd';
+    if(draw)ctx.fillText(label,pad+14,y-3);
+    y+=42;
+    set(400,24);ctx.fillStyle='#3a2a1c';
+    const val=isList?(value.length?value.join('、'):''):value;
+    wrapW(val,400,24,textW).forEach(l=>{if(draw)ctx.fillText(l,pad,y);y+=36;});
+    y+=24;
+  };
+  field('判词',v.remark+'——'+v.defendant);
+  field('罪级',v.grade);
+  field('主要罪行',v.deviation);
+  field('犯罪土壤',v.atmoList.length?v.atmoList:['（未标注犯罪土壤）'],true);
+  field('减刑事由',v.mitList.length?v.mitList:['（无从轻，死不足惜）'],true);
+  return y;
+}
+function drawPoster(v){
+  const W=820;
+  const measure=document.createElement('canvas').getContext('2d');
+  const bottom=posterLayout(measure,v,false);
+  const H=bottom+96;
+  const c=document.createElement('canvas');c.width=W;c.height=H;
+  const ctx=c.getContext('2d');
+  ctx.fillStyle='#f2ecdd';ctx.fillRect(0,0,W,H);
+  // 左下淡「判」字水印：冲击层次，0.055 不扰读
+  ctx.save();ctx.translate(96,H-206);ctx.rotate(-0.10);
+  ctx.font=`900 240px ${FONT}`;ctx.textAlign='center';ctx.fillStyle='rgba(200,40,27,.055)';
+  ctx.fillText('判',0,0);ctx.restore();
+  ctx.strokeStyle='#3a2a1c';ctx.lineWidth=8;ctx.strokeRect(16,16,W-32,H-32);
+  posterLayout(ctx,v,true);
+  // 大有罪印章：右下角双圈 240px
+  ctx.save();ctx.translate(W-176,H-224);ctx.rotate(-0.22);
+  ctx.strokeStyle='#c8281b';ctx.lineWidth=8;ctx.beginPath();ctx.arc(0,0,120,0,Math.PI*2);ctx.stroke();
+  ctx.lineWidth=3.5;ctx.beginPath();ctx.arc(0,0,104,0,Math.PI*2);ctx.stroke();
+  ctx.fillStyle='#c8281b';ctx.font=`900 60px ${FONT}`;ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('有罪',0,2);ctx.restore();
+  ctx.fillStyle='#6b5f4e';ctx.font=`700 14px ${FONT}`;ctx.textAlign='center';ctx.textBaseline='alphabetic';
+  ctx.fillText('原创解压玩具 · 不构成实名评价、职场建议或人身攻击',W/2,H-36);
+  return c;
+}
+
+/* ===== 海报弹窗（ESC + 焦点管理） ===== */
+function openPoster(){
+  if(!current){toast('先宣判');return;}
+  lastFocus=document.activeElement;
+  $('posterImg').src=drawPoster(current).toDataURL('image/png');
+  $('posterModal').classList.add('show');
+  document.querySelector('.modal-box').focus();
+}
+function closePoster(){
+  $('posterModal').classList.remove('show');
+  if(lastFocus)lastFocus.focus();
+}
+$('poster').onclick=openPoster;
+$('closePoster').onclick=closePoster;
+$('posterModal').onclick=e=>{if(e.target.id==='posterModal')closePoster();};
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&$('posterModal').classList.contains('show'))closePoster();
+});
+$('dlPoster').onclick=()=>{
+  if(!current)return;
+  const a=document.createElement('a');
+  a.href=drawPoster(current).toDataURL('image/png');
+  a.download='判刑书_'+current.caseno+'.png';a.click();
+};
+$('copyImg').onclick=()=>{
+  if(!current)return;
+  drawPoster(current).toBlob(async(blob)=>{
+    try{await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);toast('海报图片已复制');}
+    catch(e){toast('浏览器不支持复制图片，请点下载');}
+  });
+};
+
+/* ===== 分享链接 ===== */
+/* file:// 协议下 history.replaceState 会抛 SecurityError，必须 try 兜底，
+   否则中断后续逻辑（重新开庭按钮就是这么哑火的） */
+function safeReplace(url){try{history.replaceState(null,'',url);}catch(e){}}
+function shareLink(){
+  if(!selected.size){toast('先选罪证');return;}
+  const payload={b:[...selected],a:[...atmoSel],m:[...mitSel],n:(defendantName||'').trim()};
+  const hash=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  const base=location.href.split('#')[0];
+  safeReplace(base+'#'+hash);
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(base+'#'+hash)
+      .then(()=>toast('分享链接已复制'))
+      .catch(()=>toast('复制失败，请手动复制地址栏'));
+  }else{
+    toast('复制失败，请手动复制地址栏');
+  }
+}
+$('shareBtn').onclick=shareLink;
+$('copyText').onclick=()=>{
+  if(!current){toast('先宣判');return;}
+  const text=verdictText(current);
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text)
+      .then(()=>toast('全文已复制，去粘贴吐槽'))
+      .catch(()=>{fallbackCopy(text);});
+  }else{fallbackCopy(text);}
+};
+function fallbackCopy(text){
+  const ta=document.createElement('textarea');
+  ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');toast('全文已复制，去粘贴吐槽');}
+  catch(e){toast('复制失败，请手动选择');}
+  document.body.removeChild(ta);
+}
+function loadFromHash(){
+  if(!location.hash||location.hash.length<2)return;
+  try{const d=JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(1)))));
+    (d.b||[]).forEach(id=>{if(selected.size<4)selected.add(id);});
+    (d.a||[]).forEach(id=>atmoSel.add(id));
+    (d.m||[]).forEach(id=>{if(mitSel.size<2)mitSel.add(id);});
+    if(d.n){defendantName=String(d.n).slice(0,12);$('nameInput').value=defendantName;}}catch(e){}
+}
+function restart(){
+  selected.clear();atmoSel.clear();mitSel.clear();current=null;
+  defendantName='';$('nameInput').value='';
+  renderOptions();renderDockets();afterChange();
+  safeReplace(location.pathname);
+  showStep(1);
+}
+
+/* ===== 被告登记：输入框 + 快捷外号 ===== */
+$('nameInput').addEventListener('input',e=>{defendantName=e.target.value;});
+document.querySelectorAll('.nq').forEach(b=>b.onclick=()=>{
+  defendantName=b.dataset.n;
+  $('nameInput').value=b.dataset.n;
+  $('nameInput').focus();
+});
+
+$('enterBtn').onclick=()=>showStep(1);
+$('to2').onclick=()=>showStep(2);
+$('to5').onclick=()=>showStep(5);
+$('reroll').onclick=generate;
+$('restart').onclick=restart;
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>showStep(+b.dataset.go));
+
+loadFromHash();renderOptions();renderDockets();afterChange();
+if(selected.size>=2) showStep(5); else showStep(0);
+</script>
+</body>
+</html>
