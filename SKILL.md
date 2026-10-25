@@ -5,7 +5,7 @@ display_name_en: Workplace Verdict
 author: 番茄排骨
 description: 本地单文件的解压玩具网页——选同事的离谱行为，生成一份带印章的「判刑书」和竖版分享海报。零上传、可离线、可一键存图转发。当用户要做职场解压、吐槽同事、生成趣味判刑海报，或提到「同事判刑书」时启用。
 description_zh: 本地单文件的解压玩具网页——选同事的离谱行为，生成一份带印章的「判刑书」和竖版分享海报。零上传、可离线、可一键存图转发。
-description_en: An offline single-file stress-relief toy: pick a coworker's absurd behaviour, get a stamped "verdict" sheet plus a vertical shareable poster. No upload, fully offline, one-click PNG export.
+description_en: An offline single-file stress-relief toy that turns a coworker's absurd behaviour into a stamped "verdict" sheet plus a vertical shareable poster. No upload, fully offline, one-click PNG export.
 category: productivity
 version: 1.0.0
 license: 个人非商用
