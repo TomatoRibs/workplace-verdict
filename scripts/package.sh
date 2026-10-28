@@ -16,12 +16,27 @@ fi
 NAME="$(basename "$(cd "$SRC" && pwd)")"
 OUT="${OUT:-../${NAME}.zip}"
 
-# 进入目录后用相对路径打包，避免 zip 内出现绝对路径
 cd "$SRC"
 rm -f "$OUT"
-zip -r "$OUT" . -x "*.DS_Store" ".git/*" "__pycache__/*" "*.pyc" "node_modules/*" >/dev/null
 
-# 把相对路径解析成绝对路径，方便用户定位
+if command -v zip >/dev/null 2>&1; then
+  zip -r "$OUT" . -x "*.DS_Store" ".git/*" "__pycache__/*" "*.pyc" "node_modules/*" >/dev/null
+else
+  echo "未检测到 zip 命令，改用 python 打包..."
+  python3 - "$OUT" <<'PY'
+import os, zipfile, sys
+out = sys.argv[1]
+skip = {'.DS_Store'}
+with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as z:
+    for root, dirs, files in os.walk('.'):
+        for f in files:
+            if f in skip or f == os.path.basename(out):
+                continue
+            p = os.path.join(root, f)
+            z.write(p, p)
+PY
+fi
+
 case "$OUT" in
   /*) ABS="$OUT" ;;
   *)  ABS="$(cd "$(dirname "$OUT")" && pwd)/$(basename "$OUT")" ;;
