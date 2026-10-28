@@ -15,7 +15,7 @@
 2. 注册 / 登录开发者账号（公开发布通常需要实名）。
 3. 进入【技能】→【添加技能】→【创建技能】。
 4. 上传 `scripts/package.sh` 生成的 zip，或粘贴 SKILL.md。
-5. 填写以下信息（可复用技能内 `02_方法论与宣传口径.md`）：
+5. 填写以下信息（展示信息可参考 `SKILL.md` 的 description 与产品亮点）：
    - 展示名（display_name / display_name_en）
    - 简介（description_zh / description_en）
    - 分类（category，按平台下拉选项选）
