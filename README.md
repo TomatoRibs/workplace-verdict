@@ -5,7 +5,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE) [![Single File HTML](https://img.shields.io/badge/Single--File-HTML-orange.svg)](./assets/workplace-verdict.html) [![WorkBuddy Skill](https://img.shields.io/badge/WorkBuddy-Skill-purple.svg)](./SKILL.md)
 
-**🔗 [在线体验 →](https://tomatoribs.github.io/workplace-verdict/)**（点开就玩 · 免安装 · 免注册）
+**这是一个 WorkBuddy 技能**——下载装好后，一句话就能生成或重做这一份。只想先看看效果，也可以只打开网页版。
 
 ![同事判刑书首屏](./assets/preview.png)
 
@@ -14,6 +14,28 @@
 临下班甩个「不急但今就要」的活，开会抢功、复盘甩锅；把「辛苦了」当工资发；凡事标紧急，制造假性火灾。你早就想审判他了，只缺一张判决书。
 
 **5 步向导 · 10 条罪证 · 5 大罪名轴 · 三档罪级 · 0 上传**
+
+## 怎么装
+
+**方式一：装成 WorkBuddy 技能（推荐）**
+
+下载本仓库（右上角 `Code → Download ZIP`，或用 git），然后在解压出来的目录里执行：
+
+```bash
+git clone https://github.com/TomatoRibs/workplace-verdict.git
+cd workplace-verdict
+bash scripts/install_local.sh
+```
+
+装好后技能进入 `~/.workbuddy/skills/workplace-verdict/`，回到 WorkBuddy 直接说话即可。
+
+WorkBuddy 是一个本地 AI 助手；装成技能后，一句话触发：「做一个能判决 10 条罪证、5 大罪名轴的判刑书网页」。
+
+**方式二：只想打开网页版**
+
+1. 双击 `assets/workplace-verdict.html`（零依赖、离线可跑，手机可直接打开）。
+2. 走完 5 步：选罪证 → 选犯罪土壤 → 选减刑事由 → 登记被告 → 当庭宣判。
+3. 存 PNG、复制全文或生成链接，发给信得过的朋友笑一笑。
 
 ## 你会判出什么
 
@@ -52,12 +74,6 @@
 
 > 罪名、刑期、判词由你的勾选动态生成，以上为示例输出。
 
-## 怎么用
-
-1. 双击 `assets/workplace-verdict.html`（零依赖、离线可跑，手机可直接打开）。
-2. 走完 5 步：选罪证 → 选犯罪土壤 → 选减刑事由 → 登记被告 → 当庭宣判。
-3. 存 PNG、复制全文或生成链接，发给信得过的朋友笑一笑。
-
 ## 隐私
 
 选项只存在于浏览器本地，不联网、不上传。被告姓名留空则显示「被告某同事」；**如果填了，姓名会随分享链接一起编码出去**——所以我们没有理由建议你填真实姓名。判完之后留下的应当是笑声，不是能被翻出来的东西。
@@ -87,14 +103,6 @@
 ## 为什么做这个
 
 职场里有些气，举报不够格、吵架不值得、憋着又伤身。那就开庭——把他说过的话、干过的事，一条条列成罪证，判他个「轻罪（但恶心）」。至少盖那枚红印的时候，是爽的。
-
-## 装成 WorkBuddy 技能（可选）
-
-```bash
-bash scripts/install_local.sh .
-```
-
-WorkBuddy 是一个本地 AI 助手；装成技能后，一句话触发：「做一个能判决 10 条罪证、5 大罪名轴的判刑书网页」。
 
 ## 免责声明
 
